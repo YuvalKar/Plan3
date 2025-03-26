@@ -7,7 +7,7 @@ let hitCount = 0;
 let boundery = 3;
 let intervalId; // הגדרה של intervalId בהיקף הגלובלי
 let newTime = 1500; //זמן ברירת מחדל ליצירת מטוסים
-let deviceOrientation = { alpha: 0, beta: 0, gamma: 0 }; // משתנה לשמירת נתוני הטיית המכשיר
+let deviceOrientation3a = { alpha: 0, beta: 0, gamma: 0 }; // משתנה לשמירת נתוני הטיית המכשיר
 
 
 // אתחול סצנה, מצלמה ורנדר
@@ -114,7 +114,7 @@ function animate() {
     updateInfo();
     checkStatus();
     // עדכון מיקום השחקן בהתאם להטיית המכשיר
-    updatePlayerPositionByOrientation();
+    // updatePlayerPositionByOrientation();
 
     renderer.render(scene, camera);
 }
@@ -275,21 +275,22 @@ function updateInfo() {
     const infoDiv = document.getElementById('info');
     infoDiv.innerHTML = `מטוסי אוייב : ${cubes.length}
                         <br>נקודות: ${score}
+                        <br>gama: ${deviceOrientation3a.gamma}
                         <br>פגיעות: ${hitCount}`;
 }
 
 // פונקציה לטיפול באירועי הטיית מכשיר
 function handleOrientation(event) {
-    deviceOrientation.alpha = event.alpha;
-    deviceOrientation.beta = event.beta;
-    deviceOrientation.gamma = event.gamma;
+    deviceOrientation3a.alpha = event.alpha;
+    deviceOrientation3a.beta = event.beta;
+    deviceOrientation3a.gamma = event.gamma;
 }
 
 // פונקציה לעדכון מיקום השחקן בהתאם להטיית המכשיר
 function updatePlayerPositionByOrientation() {
     // שימוש ב-gamma (הטיה מצד לצד) לשליטה בתנועה ימינה ושמאלה
     // gamma נע בין -90 ל-90, נמפה את זה לטווח של -boundery עד boundery
-    let newX = (deviceOrientation.gamma / 90) * boundery;
+    let newX = (deviceOrientation3a.gamma / 90) * boundery;
 
     // הגבלת התנועה לגבולות
     if (newX < -boundery) {
