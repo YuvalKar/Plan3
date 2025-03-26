@@ -7,6 +7,7 @@ let hitCount = 0;
 let boundery = 3;
 let intervalId; // הגדרה של intervalId בהיקף הגלובלי
 let newTime = 1500; //זמן ברירת מחדל ליצירת מטוסים
+let deviceOrientation = { alpha: 0, beta: 0, gamma: 0 }; // משתנה לשמירת נתוני הטיית המכשיר
 
 
 // אתחול סצנה, מצלמה ורנדר
@@ -44,6 +45,9 @@ function init() {
 
     // טיפול באירועי מקלדת
     document.addEventListener('keydown', onKeyDown, false);
+
+    // טיפול באירועי הטיית מכשיר
+    window.addEventListener('deviceorientation', handleOrientation, true);
 
     // יצירת קוביות
     // setInterval(createCube, 1000);
@@ -109,7 +113,9 @@ function animate() {
     // עדכון מידע על המסך
     updateInfo();
     checkStatus();
-	
+    // עדכון מיקום השחקן בהתאם להטיית המכשיר
+    updatePlayerPositionByOrientation();
+
     renderer.render(scene, camera);
 }
 
@@ -137,6 +143,8 @@ function gameOver() {
 
     // עצירת הטיפול באירועי מקלדת
     document.removeEventListener('keydown', onKeyDown, false);
+    // עצירת הטיפול באירועי הטיית מכשיר
+    window.removeEventListener('deviceorientation', handleOrientation, true);
     
     // הסתרת כל המטוסים הקיימים
     cubes.forEach(cube => {
@@ -270,4 +278,26 @@ function updateInfo() {
                         <br>פגיעות: ${hitCount}`;
 }
 
+// פונקציה לטיפול באירועי הטיית מכשיר
+function handleOrientation(event) {
+    deviceOrientation.alpha = event.alpha;
+    deviceOrientation.beta = event.beta;
+    deviceOrientation.gamma = event.gamma;
+}
+
+// פונקציה לעדכון מיקום השחקן בהתאם להטיית המכשיר
+function updatePlayerPositionByOrientation() {
+    // שימוש ב-gamma (הטיה מצד לצד) לשליטה בתנועה ימינה ושמאלה
+    // gamma נע בין -90 ל-90, נמפה את זה לטווח של -boundery עד boundery
+    let newX = (deviceOrientation.gamma / 90) * boundery;
+
+    // הגבלת התנועה לגבולות
+    if (newX < -boundery) {
+        newX = -boundery;
+    } else if (newX > boundery) {
+        newX = boundery;
+    }
+
+    player.position.x = newX;
+}
 init();
