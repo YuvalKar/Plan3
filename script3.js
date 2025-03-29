@@ -8,10 +8,17 @@ let boundery = 3;
 let intervalId; // הגדרה של intervalId בהיקף הגלובלי
 let newTime = 1500; //זמן ברירת מחדל ליצירת מטוסים
 let deviceOrientation3a = { alpha: 0, beta: 0, gamma: 0 }; // משתנה לשמירת נתוני הטיית המכשיר
+let isMobile = true;
 
+function isMobileDevice() {
+    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return isMobile;
+}
+  
 
 // אתחול סצנה, מצלמה ורנדר
 function init() {
+    isMobile = isMobileDevice();
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 3, 4); // שינוי מיקום המצלמה
@@ -33,21 +40,18 @@ function init() {
 	// הוספת האור לסצנה
 	scene.add(hemisphereLight);
 
-    // יצירת שחקן
-    //const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
-    //const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    //player = new THREE.Mesh(playerGeometry, playerMaterial);
-	    
 	// יצירת מטוס שחקן
     player = createAirplane();
 	
     scene.add(player);
 
-    // טיפול באירועי מקלדת
-    document.addEventListener('keydown', onKeyDown, false);
-
-    // טיפול באירועי הטיית מכשיר
-    window.addEventListener('deviceorientation', handleOrientation, true);
+    if (isMobile) {
+        // טיפול באירועי הטיית מכשיר
+        window.addEventListener('deviceorientation', handleOrientation, true);
+    } else {
+        // טיפול באירועי מקלדת
+        document.addEventListener('keydown', onKeyDown, false);
+    }
 
     // יצירת קוביות
     // setInterval(createCube, 1000);
@@ -113,9 +117,12 @@ function animate() {
     // עדכון מידע על המסך
     updateInfo();
     checkStatus();
+    
     // עדכון מיקום השחקן בהתאם להטיית המכשיר
-    // updatePlayerPositionByOrientation();
-
+    if (isMobile) {
+        updatePlayerPositionByOrientation();
+    }
+    
     renderer.render(scene, camera);
 }
 
@@ -141,10 +148,13 @@ function changeEnemySpawnRate(newTime) {
 // פונקציה להפסקת המשחק והצגת "Game Over"
 function gameOver() {
 
-    // עצירת הטיפול באירועי מקלדת
-    document.removeEventListener('keydown', onKeyDown, false);
-    // עצירת הטיפול באירועי הטיית מכשיר
-    window.removeEventListener('deviceorientation', handleOrientation, true);
+    if (isMobile) {
+        // עצירת הטיפול באירועי הטיית מכשיר
+        window.removeEventListener('deviceorientation', handleOrientation, true);
+    } else {
+        // עצירת הטיפול באירועי מקלדת
+        document.removeEventListener('keydown', onKeyDown, false);
+    }
     
     // הסתרת כל המטוסים הקיימים
     cubes.forEach(cube => {
@@ -178,13 +188,6 @@ function createEnemyAirplane() {
     const airplane = new THREE.Group();
     const EnemyColor = Math.random() * 0xffffff; // צבע אקראי
 
-    // חרטום
-    // const noseGeometry = new THREE.ConeGeometry(0.25, 0.5, 32);
-    // const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xff8000 }); // כתום
-    // const nose = new THREE.Mesh(noseGeometry, noseMaterial);
-    // nose.position.z = 1;
-    // airplane.add(nose);
-
     // גוף המטוס (ארוך יותר)
     const bodyGeometry = new THREE.BoxGeometry(0.3, 0.3, 1.5);
     const bodyMaterial = new THREE.MeshPhongMaterial({ color: EnemyColor }); 
@@ -198,12 +201,6 @@ function createEnemyAirplane() {
     wing.position.y = 0.2;
     wing.position.z = 0.3;
     airplane.add(wing);
-
-    // כנף משנית
-    // const smallWingGeometry = new THREE.BoxGeometry(0.8, 0.08, 0.3);
-    // const smallWing = new THREE.Mesh(smallWingGeometry, wingMaterial);
-    // smallWing.position.y = -0.2;
-    // airplane.add(smallWing);
 
     // זנב אנכי
     const verTailGeometry = new THREE.BoxGeometry(0.1, 0.6, 0.1);
