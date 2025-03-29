@@ -8,14 +8,13 @@ let boundery = 3;
 let intervalId; // הגדרה של intervalId בהיקף הגלובלי
 let newTime = 1500; //זמן ברירת מחדל ליצירת מטוסים
 let deviceOrientation3a = { alpha: 0, beta: 0, gamma: 0 }; // משתנה לשמירת נתוני הטיית המכשיר
-let isMobile = true;
+let isMobile = true; // Falg for Mobile
+let gameRunning = true; // Flag to track if the game is running
 
 function isMobileDevice() {
-    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return isMobile;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
   
-
 // אתחול סצנה, מצלמה ורנדר
 function init() {
     isMobile = isMobileDevice();
@@ -95,6 +94,8 @@ function createAirplane() {
 
 // פונקציית אנימציה
 function animate() {
+    if (!gameRunning) return; // New: Stop the loop if the game is not running
+
     requestAnimationFrame(animate);
 
     // תנועת קוביות
@@ -147,6 +148,7 @@ function changeEnemySpawnRate(newTime) {
 
 // פונקציה להפסקת המשחק והצגת "Game Over"
 function gameOver() {
+    gameRunning = false; // New: Stop the animation loop
 
     if (isMobile) {
         // עצירת הטיפול באירועי הטיית מכשיר
