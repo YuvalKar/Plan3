@@ -108,7 +108,7 @@ function animate() {
             // console.log("Score: " + score);
         } else if (checkCollision(player, cube)) {
             // התנגשות עם שחקן
-            playSound();
+            HitPlayer();
             scene.remove(cube);
             cubes.splice(cubes.indexOf(cube), 1);
         }
@@ -253,6 +253,27 @@ function playSound() {
 	hitCount++; // הגדלת מונה פגיעות
 }
 
+function animateHit(object) {
+    // שמירת הצבע המקורי
+    const originalColor1 = object.children[1].material.color.clone();
+    const originalColor2 = object.children[2].material.color.clone();
+
+    // שינוי צבע לאדום
+    object.children[1].material.color.set(0xff0000);
+    object.children[2].material.color.set(0xff0000);
+
+    // החזרת הצבע המקורי לאחר זמן קצר
+    setTimeout(() => {
+        object.children[1].material.color.copy(originalColor1);
+        object.children[2].material.color.copy(originalColor2);
+    }, 200); // 200 מילישניות
+}
+
+function HitPlayer() {
+    playSound();
+    animateHit(player);
+}
+
 // פונקציה לטיפול באירועי מקלדת
 function onKeyDown(event) {
     switch (event.keyCode) {
@@ -272,8 +293,6 @@ function updateInfo() {
     const infoDiv = document.getElementById('info');
     infoDiv.innerHTML = `מטוסי אוייב : ${cubes.length}
                         <br>נקודות: ${score}
-                        <br>מובייל: ${isMobile ? 'כן' : 'לא'}
-                        <br>gama: ${deviceOrientation3a.gamma}
                         <br>פגיעות: ${hitCount}`;
 }
 
