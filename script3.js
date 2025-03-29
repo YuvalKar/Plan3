@@ -272,6 +272,7 @@ function updateInfo() {
     const infoDiv = document.getElementById('info');
     infoDiv.innerHTML = `מטוסי אוייב : ${cubes.length}
                         <br>נקודות: ${score}
+                        <br>מובייל: ${isMobile ? 'כן' : 'לא'}
                         <br>gama: ${deviceOrientation3a.gamma}
                         <br>פגיעות: ${hitCount}`;
 }
